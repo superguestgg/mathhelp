@@ -320,20 +320,19 @@ def mix(equation):
         return reducemonomials(equation)
     
 #mixmixmixmix end
-typ, equation=map(str, input().split( ))
-if typ=="1" or typ=="reducemonomials":
-    print(reducemonomials(equation))
-elif typ=="2" or typ=="multiply2polynomials":
-    print(multiply2polynomials(equation))
-elif typ=="3" or typ=="multiplypolynomials":
-    print(multiplypolynomials(equation))
-elif typ=="4" or typ=="solveequation":
-    print(solveequation(equation))
-elif typ=="5" or typ=="calculatethevalue":
-    print(calculatethevalue(equation))
-elif typ=="mix":
-    print(mix(equation))
 
-
-
+def start():
+    typ, equation=map(str, input().split( ))
+    if typ=="1" or typ=="reducemonomials":
+        print(reducemonomials(equation))
+    elif typ=="2" or typ=="multiply2polynomials":
+        print(multiply2polynomials(equation))
+    elif typ=="3" or typ=="multiplypolynomials":
+        print(multiplypolynomials(equation))
+    elif typ=="4" or typ=="solveequation":
+        print(solveequation(equation))
+    elif typ=="5" or typ=="calculatethevalue":
+        print(calculatethevalue(equation))
+    elif typ=="mix":
+        print(mix(equation))
     
