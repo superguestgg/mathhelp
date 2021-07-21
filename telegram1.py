@@ -72,6 +72,17 @@ def isadmin(userid):
         return True
     else:
         return False
+def isuser(userid):
+    connection = create_connection("telegram1bot.sqlite")
+    select_users = "SELECT * from users where id='"+str(userid)+"';"
+    users = execute_read_query(connection, select_users)
+    allusers=''
+    for user in users:
+        allusers+=str(user)
+    if (allusers).count(str(userid))>0:
+        return True
+    else:
+        return False
 def isuser2(userid):
     connection = create_connection("telegram1bot.sqlite")
     select_users = "SELECT * from users where rights in ('user2', 'admin')"+";"
@@ -83,7 +94,12 @@ def isuser2(userid):
         return True
     else:
         return False
-      
+@bot.message_handler(commands=['mysites'])
+def tall_about_sites(message):
+    bot.reply_to(message, 'home page: https://superguestgg.github.io/me/')
+    bot.reply_to(message, 'other sites: https://superguestgg.github.io/web-paint/terraria, https://superguestgg.github.io/chess-and-checkers/onlychess.html, https://superguestgg.github.io/session')
+
+    
 @bot.message_handler(commands=['start'])
 def start_message(message):
     keyboard = telebot.types.ReplyKeyboardMarkup(True)
@@ -104,12 +120,34 @@ def send_help(message):
     keyboard = telebot.types.ReplyKeyboardMarkup(True)
     keyboard.row('погода','погода на 5 дней','рандом','рандомное число','матеша')
     bot.send_message(message.chat.id, 'used /keyboard', reply_markup=keyboard)
+
+    
 @bot.message_handler(commands=['keyboard'])
 def send_keyboard(message):
     keyboard = telebot.types.ReplyKeyboardMarkup(True)
-    keyboard.row('погода','погода на 5 дней','рандом','рандомное число','матеша')
+    keyboard.add('погода','погода на 5 дней','рандом','рандомное число','матеша')
     bot.send_message(message.chat.id, 'used /keyboard', reply_markup=keyboard)
-     
+    
+@bot.message_handler(commands=['keyboarduser'])
+def send_keyboard_of_user(message):
+    keyboard = telebot.types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
+    keyboard.add('погода','погода на 5 дней','рандом','рандомное число','матеша')
+    bot.send_message(message.chat.id, 'used /keyboarduser', reply_markup=keyboard)
+@bot.message_handler(commands=['keyboarduser2'])
+def send_keyboard_of_user2(message):
+    if isuser2(message.from_user.id)==True or isadmin(message.from_user.id)==True:
+        keyboard = telebot.types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
+        keyboard.add('/makerepository','/writeinrepository','/deletefromrepository','/showrepository','/pasterepository')
+        bot.send_message(message.chat.id, 'used /keyboarduser2', reply_markup=keyboard)
+@bot.message_handler(commands=['keyboardadmin'])
+def send_keyboard_of_admin(message):
+    if isadmin(message.from_user.id)==True:
+        keyboard = telebot.types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
+        keyboard.add('/showallusers','/makerepository','/writeinrepository','/deletefromrepository','/showrepository','/pasterepository')
+        bot.send_message(message.chat.id, 'used /keyboardadmin', reply_markup=keyboard)
+
+        
+    
 @bot.message_handler(commands=['mathhelp'])
 def send_mathhelp(message):
     bot.reply_to(message, 'используй слово матеша в начале сообщения')
@@ -126,11 +164,24 @@ def setmetoadmin(message):
 def upgradetouser2(message):
     keyboard = telebot.types.ReplyKeyboardMarkup(True)
     keyboard.row('/makerepository','/writeinrepository','/deletefromrepository','/showrepository','/pasterepository')
-    
     bot.send_message(message.chat.id, 'hello, you account was upgraded and your rights have been extended, commands:', reply_markup=keyboard)
     upgradeuser='UPDATE users set rights="user2" where id="'+str(message.from_user.id)+'";'
     connection = create_connection("telegram1bot.sqlite")
     execute_query(connection, upgradeuser)
+@bot.message_handler(commands=['setrights'])
+def setrights(message):
+    if isadmin(message.from_user.id)==True:
+        try:
+            textmessage=message.text.replace("/setrights ","").split(" ")
+        
+    
+            upgradeuser='UPDATE users set rights="'+str(textmessage[1])+'" where id="'+str(textmessage[0])+'";'
+            connection = create_connection("telegram1bot.sqlite")
+            execute_query(connection, upgradeuser)
+            bot.send_message(message.chat.id, 'hello, 1 account was upgraded and his rights have been extended, commands:')
+        except:
+            bot.send_message(message.chat.id, 'error')
+
     
 @bot.message_handler(commands=['showallusers'])
 def showallusers(message):
@@ -150,7 +201,7 @@ def makerepository(message):
         connection = create_connection("telegram1bot.sqlite")
         create_repository = "CREATE TABLE IF NOT EXISTS userrepository"+str(message.from_user.id)+"(number INTEGER PRIMARY KEY AUTOINCREMENT,name TEXT NOT NULL,content TEXT not null);"
         execute_query(connection, create_repository)
-        bot.send_message(message.from_user.id,'good')
+        bot.send_message(message.from_user.id,'successfully')
 @bot.message_handler(commands=['writeinrepository'])
 def writeinrepository(message):
     if isadmin(message.from_user.id)==True or isuser2(message.from_user.id)==True:
@@ -162,7 +213,7 @@ def writeinrepository(message):
             write_in_repository = "insert into userrepository"+str(message.from_user.id)+"(name, content) values('"+thismessage[0]+"', '"+thismessage[1]+"');"
             print(write_in_repository)
             execute_query(connection, write_in_repository)
-            bot.send_message(message.from_user.id,'good')
+            bot.send_message(message.from_user.id,'successful')
         except Exception as e:
             bot.send_message(message.from_user.id,str(e))
 @bot.message_handler(commands=['deletefromrepository'])
@@ -176,7 +227,7 @@ def deletefromrepository(message):
             write_in_repository = "delete from userrepository"+str(message.from_user.id)+" where name='"+thismessage+"';"
             print(write_in_repository)
             execute_query(connection, write_in_repository)
-            bot.send_message(message.from_user.id,'good')
+            bot.send_message(message.from_user.id,'successfully')
         except Exception as e:
             bot.send_message(message.from_user.id,str(e))            
 @bot.message_handler(commands=['showrepository'])
@@ -189,13 +240,13 @@ def showrepository(message):
 @bot.message_handler(commands=['pasterepository'])
 def pasterepository(message):
     if isadmin(message.from_user.id)==True or isuser2(message.from_user.id)==True:
-        thismessage=((message.text).replace("]v","").replace("[","")).split("),(")
+        thismessage=((message.text).replace("]v","").replace("[","").replace("/pasterepository","")).split("), (")
         for i in range (len(thismessage)):
             try:
-                thismessage[i]=thismessage.split(",'")
+                print(thismessage[i])
+                thismessage[i]=thismessage[i].split(", '")
                 thismessage[i][1]=thismessage[i][1].replace("'","")
                 thismessage[i][2]=thismessage[i][1].replace("')","")
-
                 try:
                     connection = create_connection("telegram1bot.sqlite")
                     write_in_repository = "insert into userrepository"+str(message.from_user.id)+"(name, content) values('"+thismessage[i][1]+"', '"+thismessage[i][2]+"');"
@@ -206,7 +257,34 @@ def pasterepository(message):
                     bot.send_message(message.from_user.id,str(e))
             except:
                 print('error')
-        bot.send_message(message.from_user.id,'good')
+        bot.send_message(message.from_user.id,'successfully')
+
+        
+@bot.message_handler(commands=['restoredatabaseofusers'])
+def restoredatabaseofusers(message):
+    if isadmin(message.from_user.id)==True or isuser2(message.from_user.id)==True:
+        thismessage=((message.text).replace("/restoredatabaseofusers","")).split(")(")
+        for i in range (len(thismessage)):
+            print(i)
+            try:
+                thismessage[i]=thismessage[i].split(", '")
+                thismessage[i][0]=int(thismessage[i][0].replace("(",""))
+                thismessage[i][1]=thismessage[i][1].replace("'","")
+                thismessage[i][2]=thismessage[i][2].replace("'","").replace(")","")
+                print(thismessage[i])
+                if (isuser(thismessage[i][0]))==False:
+                    print(thismessage[i])
+                    try:
+                        connection = create_connection("telegram1bot.sqlite")
+                        write_in_repository = "insert into users(id, name, rights) values("+str(thismessage[i][0])+", '"+thismessage[i][1]+"', '"+thismessage[i][2]+"');"
+                        print(write_in_repository)
+                        execute_query(connection, write_in_repository)
+                        bot.send_message(message.from_user.id,'added +1 user')
+                    except Exception as e:
+                        bot.send_message(message.from_user.id,str(e))
+            except:
+                bot.send_message(message.from_user.id,'error')
+        bot.send_message(message.from_user.id,'successfully')
 
 
 
@@ -223,6 +301,9 @@ def start_message(message):
 @bot.message_handler(content_types=['audio'])
 def send_the_fuck(message):
     bot.send_message(message.from_user.id,'шо за хуйня')
+@bot.message_handler(content_types=['photo'])
+def send_the_fuck(message):
+    bot.send_message(message.from_user.id,'у меня близорукость, ничего не вижу')
 now1=''
 @bot.message_handler(content_types=['text'])
 def get_text_messages(message):
