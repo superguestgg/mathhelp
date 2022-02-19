@@ -1,3 +1,53 @@
+import time
+def help2(st):#перемножает стоящие рядом числа, или возводит в степень числа
+    l=len(st)
+    aast=list(st)
+    i=1
+    while i<l-1:
+        aast=list(st)
+        if aast[i]=="*" or aast[i]=="^":
+            if aast[i-1].isdigit() and aast[i+1].isdigit():
+                lnum=0
+                j=i-1
+                while j>=0 :
+                    if aast[j].isdigit():
+                        j-=1
+                    else:
+                        break
+                j+=1
+                for jj in range (j,i):
+                    lnum=lnum*10+int(aast[jj])
+                rnum=0
+                jl=j
+                j=i+1
+                while j<l :
+                    if aast[j].isdigit():
+                        j+=1
+                    else:
+                        break
+                j-=1
+                jr=j
+                for jj in range (i+1,j+1):
+                    rnum=rnum*10+int(aast[jj])
+                if aast[i]=="*":
+                    num=rnum*lnum
+                elif aast[i]=="^":
+                    print(lnum,rnum)
+                    num=lnum**rnum
+                st=st[0:jl]+str(num)+st[jr+1:l]
+                i=0
+                print(st)
+                l=len(st)
+                time.sleep(1)
+        
+        i+=1
+    print(st)
+    return st
+                
+                
+
+
+    
 def help(st):
     l=len(st)
     aa=100*[0]
@@ -26,7 +76,7 @@ def help(st):
             sign="-"
             now2=0
             now3=0
-        elif (st[i]).isdigit()==True:
+        elif (st[i]).isdigit():
             if now!="afterx":
                 now2=now2*10+int(st[i])
             else :
@@ -243,17 +293,18 @@ def multiply2polynomials(aaa):
 #222222222222222222222222222222end
 
 #444444444444444444444444444444start
-def solveequation(aaaaa):
+def solveequation(equation):
     print("waiting...4...")
-    aaaaa=aaaaa.replace("==", "=")
-    aaaaa=aaaaa.split("=")
-    if len(aaaaa)!=2 :
+    equation=equation.replace("==", "=")
+    equation=equation.split("=")
+    if len(equation)!=2 :
         return "error"
     else:
-        if aaaaa[0]=="" or aaaaa[1]=="":
+        if equation[0]=="" or equation[1]=="":
             return "error"
         else:
-            aaaa=multiplypolynomials(aaaaa[0])
+            aaaa=multiplypolynomials(equation[0])
+            print("--------",aaaa)
             print("binpoisk")
             aa=help(aaaa)
             notmatter=0
@@ -264,7 +315,7 @@ def solveequation(aaaaa):
                 for i in range (len(aa)):
                     if aa[i]!=0:
                         aa[i]=-aa[i]                
-            result=int(aaaaa[1])
+            result=int(equation[1])
             print(result)
             r=1000
             l=-1000
@@ -320,19 +371,20 @@ def mix(equation):
         return reducemonomials(equation)
     
 #mixmixmixmix end
+typ, equation=map(str, input().split(":"))
+if typ=="1" or typ=="reducemonomials":
+    print(reducemonomials(equation))
+elif typ=="2" or typ=="multiply2polynomials":
+    print(multiply2polynomials(equation))
+elif typ=="3" or typ=="multiplypolynomials":
+    print(multiplypolynomials(equation))
+elif typ=="4" or typ=="solveequation":
+    print(solveequation(equation))
+elif typ=="5" or typ=="calculatethevalue":
+    print(calculatethevalue(equation))
+elif typ=="mix":
+    print(mix(equation))
 
-def start():
-    typ, equation=map(str, input().split( ))
-    if typ=="1" or typ=="reducemonomials":
-        print(reducemonomials(equation))
-    elif typ=="2" or typ=="multiply2polynomials":
-        print(multiply2polynomials(equation))
-    elif typ=="3" or typ=="multiplypolynomials":
-        print(multiplypolynomials(equation))
-    elif typ=="4" or typ=="solveequation":
-        print(solveequation(equation))
-    elif typ=="5" or typ=="calculatethevalue":
-        print(calculatethevalue(equation))
-    elif typ=="mix":
-        print(mix(equation))
+
+
     
