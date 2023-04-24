@@ -1,4 +1,4 @@
-
+import polynomial as p
 
 class Matrix2d:
     def __init__(self, array):
@@ -55,11 +55,13 @@ class Matrix2d:
         return c
     
     def calc_determine(self):
+        #print(self.shape)
         c = type(self.args[0][0])(0)
         ar = self.args
         if self.shape[0]==2 and self.shape[1]==2:
             return ar[0][0]*ar[1][1] - ar[0][1]*ar[1][0]
         for i in range (self.shape[1]):
+            print(c)
             new_matrix = []
             for y in range (1, self.shape[0]):
                 new_matrix.append([])
@@ -72,6 +74,7 @@ class Matrix2d:
             else:
                 c -= Matrix2d(new_matrix).calc_determine() * ar[0][i]
         return c
+
 
 class ComplexInt:
     def __init__(self, x, y=0):
@@ -91,8 +94,21 @@ class ComplexInt:
         return str(self.x)+"+i*"+str(self.y)
 
 
+
+aa=[[[146,1], 173,34,10,95],
+ [173,[206,1],40,13,113],
+ [ 34 , 40,[8,1],2,22],
+ [ 10 , 13,2,[2,1], 7],
+ [ 95,113,22,7,[62,1]]]
+#aa=[[[1,1],2],[3,[4,1]]]
+for i in range (2):
+    for j in range (2):
+        aa[i][j]=p.Polynomial(aa[i][j])
+print(Matrix2d(aa).calc_determine())
+
 #tests
-m=Matrix2d([[0,1,2,3],[1,0,1,2],[2,1,0,1],[3,2,1,0]])
+
+"""m=Matrix2d([[0,1,2,3],[1,0,1,2],[2,1,0,1],[3,2,1,0]])
 m5=Matrix2d([[0,1,1,1,1],[1,0,1,1,1],[1,1,0,1,1],[1,1,1,0,1],[1,1,1,1,0]])
 
 print(m.calc_determine())
@@ -125,4 +141,5 @@ for i in range (5):
     for j in range (5):
         um[i].append(ComplexInt(ulearn_matrix[i][j][0],ulearn_matrix[i][j][1]))
 print(Matrix2d(um).calc_determine5())
-print(Matrix2d(um).calc_determine())
+print(Matrix2d(um).calc_determine())"""
+
